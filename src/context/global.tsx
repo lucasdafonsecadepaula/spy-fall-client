@@ -6,7 +6,8 @@ import { io, Socket } from 'socket.io-client'
 import { useRouter } from 'next/navigation'
 import { GameStatusProps } from '@/model/GameStatus'
 
-const urlSocket = process.env.NEXT_PUBLIC_SOCKET || 'http://localhost:8000'
+const urlSocket =
+  process.env.NEXT_PUBLIC_SOCKET || 'https://spyfall-445v.onrender.com/'
 
 const gameStatusDefault: GameStatusProps = {
   admId: '',
