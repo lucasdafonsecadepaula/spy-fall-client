@@ -3,7 +3,7 @@
 'use client'
 import { ReactNode, createContext, useEffect, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { GameStatusProps } from '@/model/GameStatus'
 
 const urlSocket =
@@ -53,6 +53,8 @@ type GlobalProviderProps = {
 }
 
 export function GlobalProvider({ children }: GlobalProviderProps) {
+  const pathname = usePathname()
+
   const router = useRouter()
   const [socket, setSocket] = useState<SocketInstanceProps>(null)
   const [name, setName] = useState<string>(() => {
@@ -86,8 +88,12 @@ export function GlobalProvider({ children }: GlobalProviderProps) {
     const localSessionId = localStorage.getItem('sessionId')
     const localRoomId = localStorage.getItem('roomId')
     const localName = localStorage.getItem('name')
+    const paths = pathname.split('/')
+    const thereIsGameInPath = paths.some((e) => e === 'game')
 
-    if (localSessionId && localRoomId && localName) {
+    console.log('pathname', thereIsGameInPath)
+
+    if (thereIsGameInPath && localSessionId && localRoomId && localName) {
       socketInstance.emit('join-room', {
         name: localName,
         roomId: localRoomId,
