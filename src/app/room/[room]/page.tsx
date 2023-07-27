@@ -1,17 +1,31 @@
 'use client'
 import { GlobalContext } from '@/context/global'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Image from 'next/image'
 import bgImage from '../../../imgs/spyfall.jpg'
 import { useParams } from 'next/navigation'
 
 export default function Room() {
   const params = useParams()
-  const { gameStatus, sessionId, changeGameConfig, startGame } =
+  const { gameStatus, sessionId, changeGameConfig, startGame, socket } =
     useContext(GlobalContext)
 
   const [timeInMinutes, setTimeInMinutes] = useState('10')
   const [howMuchSpys, setHowMuchSpys] = useState('1')
+
+  useEffect(() => {
+    const localSessionId = localStorage.getItem('sessionId')
+    const localRoomId = localStorage.getItem('roomId')
+    const localName = localStorage.getItem('name')
+
+    if (localSessionId && localRoomId && localName) {
+      socket?.emit('join-room', {
+        name: localName,
+        roomId: localRoomId,
+        sessionId: localSessionId,
+      })
+    }
+  }, [socket])
 
   function salvar() {
     const timerInS = Number(timeInMinutes) * 60

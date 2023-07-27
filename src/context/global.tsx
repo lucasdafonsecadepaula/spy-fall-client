@@ -61,6 +61,7 @@ type GlobalProviderProps = {
 }
 
 export function GlobalProvider({ children }: GlobalProviderProps) {
+  const pathname = usePathname()
   const router = useRouter()
   const [socket, setSocket] = useState<SocketInstanceProps>(null)
   const [name, setName] = useState<string>(() => {
@@ -97,7 +98,20 @@ export function GlobalProvider({ children }: GlobalProviderProps) {
   }, [])
 
   useEffect(() => {
+    const paths = pathname.split('/')
+
+    const roomOrGame = paths.some((e) => e === 'game' || e === 'room')
+
+    if (!roomOrGame) {
+      socket?.disconnect()
+      socket?.connect()
+    }
+    // socketInstance.disconnect()
+  }, [pathname, socket])
+
+  useEffect(() => {
     const socketInstance = io(urlSocket)
+
     setSocket(socketInstance)
   }, [])
 

@@ -2,7 +2,6 @@
 import { GlobalContext } from '@/context/global'
 import { useContext, useEffect, useState } from 'react'
 import { Card, CardProps } from '@/components/Card'
-import { usePathname } from 'next/navigation'
 
 function getFormatedTimer(segundos: number) {
   if (segundos < 0) return '00:00'
@@ -22,7 +21,6 @@ function getFormatedTimer(segundos: number) {
 export default function Room() {
   const { myCard, socket, gameStatus, sessionId } = useContext(GlobalContext)
   const [timer, setTimer] = useState(0)
-  const pathname = usePathname()
 
   useEffect(() => {
     socket?.on('timer', (data: number) => {
@@ -38,17 +36,15 @@ export default function Room() {
     const localSessionId = localStorage.getItem('sessionId')
     const localRoomId = localStorage.getItem('roomId')
     const localName = localStorage.getItem('name')
-    const paths = pathname.split('/')
-    const thereIsGameInPath = paths.some((e) => e === 'game')
 
-    if (thereIsGameInPath && localSessionId && localRoomId && localName) {
+    if (localSessionId && localRoomId && localName) {
       socket?.emit('join-room', {
         name: localName,
         roomId: localRoomId,
         sessionId: localSessionId,
       })
     }
-  }, [socket, pathname])
+  }, [socket])
 
   function stop() {
     socket?.emit('pause-game')
