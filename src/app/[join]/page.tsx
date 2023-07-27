@@ -1,5 +1,5 @@
 'use client'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { GlobalContext } from '@/context/global'
 import { useParams } from 'next/navigation'
 import Image from 'next/image'
@@ -8,7 +8,11 @@ import bgImage from '../../imgs/spyfall.jpg'
 export default function Home() {
   const params = useParams()
   const [name, setName] = useState('')
-  const { joinARoom } = useContext(GlobalContext)
+  const { joinARoom, reset } = useContext(GlobalContext)
+
+  useEffect(() => {
+    reset()
+  }, [reset])
 
   const onClick = (e: React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault()

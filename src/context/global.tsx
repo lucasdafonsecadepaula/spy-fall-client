@@ -32,6 +32,7 @@ interface Global {
   joinARoom: ({ name, roomId }: { name: string; roomId: string }) => void
   changeGameConfig: (config: { timerInS: number; howMuchSpys: number }) => void
   startGame: () => void
+  reset: () => void
 }
 
 export const GlobalContext = createContext<Global>({
@@ -44,6 +45,7 @@ export const GlobalContext = createContext<Global>({
   joinARoom: ({ name, roomId }: { name: string; roomId: string }) => {},
   changeGameConfig: (config: { timerInS: number; howMuchSpys: number }) => {},
   startGame: () => {},
+  reset: () => {},
 })
 
 type SocketResJoinedRoom = { sessionId: string; roomId: string; name: string }
@@ -53,8 +55,6 @@ type GlobalProviderProps = {
 }
 
 export function GlobalProvider({ children }: GlobalProviderProps) {
-  const pathname = usePathname()
-
   const router = useRouter()
   const [socket, setSocket] = useState<SocketInstanceProps>(null)
   const [name, setName] = useState<string>(() => {
@@ -81,25 +81,18 @@ export function GlobalProvider({ children }: GlobalProviderProps) {
   const [myCard, setMyCard] = useState('')
   const [gameStatus, setGameStatus] = useState(gameStatusDefault)
 
+  function reset() {
+    localStorage.clear()
+    setName('')
+    setSessionId('')
+    setRoomId('')
+    setMyCard('')
+    setGameStatus(gameStatusDefault)
+  }
+
   useEffect(() => {
     const socketInstance = io(urlSocket)
     setSocket(socketInstance)
-
-    const localSessionId = localStorage.getItem('sessionId')
-    const localRoomId = localStorage.getItem('roomId')
-    const localName = localStorage.getItem('name')
-    const paths = pathname.split('/')
-    const thereIsGameInPath = paths.some((e) => e === 'game')
-
-    console.log('pathname', thereIsGameInPath)
-
-    if (thereIsGameInPath && localSessionId && localRoomId && localName) {
-      socketInstance.emit('join-room', {
-        name: localName,
-        roomId: localRoomId,
-        sessionId: localSessionId,
-      })
-    }
   }, [])
 
   useEffect(() => {
@@ -130,12 +123,7 @@ export function GlobalProvider({ children }: GlobalProviderProps) {
     })
 
     socket?.on('reset', () => {
-      localStorage.clear()
-      setName('')
-      setSessionId('')
-      setRoomId('')
-      setMyCard('')
-      setGameStatus(gameStatusDefault)
+      reset()
       router.push('/')
     })
 
@@ -192,6 +180,7 @@ export function GlobalProvider({ children }: GlobalProviderProps) {
         joinARoom,
         changeGameConfig,
         startGame,
+        reset,
       }}
     >
       {children}
