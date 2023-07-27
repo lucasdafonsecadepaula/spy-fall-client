@@ -64,7 +64,9 @@ export default function Room() {
       <button
         className="bg-blue-600 rounded-md py-2 px-4 text-md font-bold w-full z-10 my-8"
         onClick={() =>
-          navigator.clipboard.writeText(`http://localhost:3000/${params.room}`)
+          navigator.clipboard.writeText(
+            `${process.env.NEXT_PUBLIC_URL}/${params.room}`,
+          )
         }
       >
         🔗 COPIAR ULR

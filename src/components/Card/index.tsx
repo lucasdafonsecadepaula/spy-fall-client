@@ -87,17 +87,20 @@ export function Card({ type, label }: CardProps) {
   useEffect(() => {
     timeoutToHideCardRef.current = setTimeout(() => {
       setIsVisible(false)
-    }, 5000)
+    }, 30000)
   }, [])
 
   const flipCard = () => {
     const newValue = !isVisible
+
     if (timeoutToHideCardRef.current) {
       clearTimeout(timeoutToHideCardRef.current)
     }
-    setTimeout(() => {
+
+    timeoutToHideCardRef.current = setTimeout(() => {
       setIsVisible(false)
-    }, 5000)
+    }, 15000)
+
     setIsVisible(newValue)
   }
 
