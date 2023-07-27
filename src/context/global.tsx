@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
-import { ReactNode, createContext, useEffect, useState } from 'react'
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import { io, Socket } from 'socket.io-client'
 import { usePathname, useRouter } from 'next/navigation'
 import { GameStatusProps } from '@/model/GameStatus'
@@ -81,14 +87,14 @@ export function GlobalProvider({ children }: GlobalProviderProps) {
   const [myCard, setMyCard] = useState('')
   const [gameStatus, setGameStatus] = useState(gameStatusDefault)
 
-  function reset() {
+  const reset = useCallback(() => {
     localStorage.clear()
     setName('')
     setSessionId('')
     setRoomId('')
     setMyCard('')
     setGameStatus(gameStatusDefault)
-  }
+  }, [])
 
   useEffect(() => {
     const socketInstance = io(urlSocket)
@@ -133,7 +139,7 @@ export function GlobalProvider({ children }: GlobalProviderProps) {
       socket?.off('card')
       socket?.off('reset')
     }
-  }, [socket, router, sessionId, roomId])
+  }, [socket, router, sessionId, roomId, reset])
 
   const createARoom = ({ name: newName }: { name: string }) => {
     if (socket) {
